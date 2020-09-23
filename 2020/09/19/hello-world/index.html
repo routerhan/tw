@@ -22,15 +22,15 @@
     var CONFIG = {"hostname":"routerhan.github.io","root":"/tw/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="閱讀這篇文章後你將會學到：  了解如何利用piblic Helm charts來幫助我們部署，經由以下步驟: 如何列出和搜尋public charts, 如何列出和添加repositories, 如何建立和部署public Helm charts.">
+  <meta name="description" content="閱讀這篇文章後你將會學到：  了解如何利用piblic Helm charts來幫助我們部署到kubernetes上。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Helm">
+<meta property="og:title" content="Helm實作演練（一）：利用公用的Chart做部署">
 <meta property="og:url" content="https://routerhan.github.io/tw/2020/09/19/hello-world/index.html">
 <meta property="og:site_name" content="Chen&#39;s Blog">
-<meta property="og:description" content="閱讀這篇文章後你將會學到：  了解如何利用piblic Helm charts來幫助我們部署，經由以下步驟: 如何列出和搜尋public charts, 如何列出和添加repositories, 如何建立和部署public Helm charts.">
+<meta property="og:description" content="閱讀這篇文章後你將會學到：  了解如何利用piblic Helm charts來幫助我們部署到kubernetes上。">
 <meta property="og:locale" content="zh_TW">
 <meta property="article:published_time" content="2020-09-19T13:35:00.000Z">
-<meta property="article:modified_time" content="2020-09-21T18:12:14.907Z">
+<meta property="article:modified_time" content="2020-09-22T13:50:55.114Z">
 <meta property="article:author" content="Ching-Han">
 <meta property="article:tag" content="Helm">
 <meta property="article:tag" content="Kubernetes">
@@ -50,7 +50,7 @@
   };
 </script>
 
-  <title>Helm | Chen's Blog</title>
+  <title>Helm實作演練（一）：利用公用的Chart做部署 | Chen's Blog</title>
   
 
 
@@ -183,7 +183,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Helm
+          Helm實作演練（一）：利用公用的Chart做部署
         </h1>
 
         <div class="post-meta">
@@ -200,7 +200,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新於</span>
-                <time title="修改時間：2020-09-21 20:12:14" itemprop="dateModified" datetime="2020-09-21T20:12:14+02:00">2020-09-21</time>
+                <time title="修改時間：2020-09-22 15:50:55" itemprop="dateModified" datetime="2020-09-22T15:50:55+02:00">2020-09-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -225,7 +225,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">文章字數：</span>
-              <span>3k</span>
+              <span>3.1k</span>
             </span>
             <span class="post-meta-item" title="所需閱讀時間">
               <span class="post-meta-item-icon">
@@ -246,17 +246,12 @@
       
         <p>閱讀這篇文章後你將會學到：</p>
 <ul>
-<li>了解如何利用piblic Helm charts來幫助我們部署，經由以下步驟:<ul>
-<li>如何列出和搜尋public charts,</li>
-<li>如何列出和添加repositories,</li>
-<li>如何建立和部署public Helm charts.<a id="more"></a>
+<li>了解如何利用piblic Helm charts來幫助我們部署到kubernetes上。<a id="more"></a>
 
 
 </li>
 </ul>
-</li>
-</ul>
-<h3 id="安裝-Helm"><a href="#安裝-Helm" class="headerlink" title="安裝 Helm"></a>安裝 Helm</h3><p>首先我們必須安裝好Helm，如果你是使用macOS，可以利用<code>brew</code> 來安裝Helm:</p>
+<h3 id="安裝-Helm"><a href="#安裝-Helm" class="headerlink" title="安裝 Helm"></a>安裝 Helm</h3><p>首先我們必須安裝Helm，如果你是使用macOS，可以利用<code>brew</code> 來安裝Helm:</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ brew install helm</span><br></pre></td></tr></table></figure>
 
 <p>更多資料請參考: <a target="_blank" rel="noopener" href="https://helm.sh/docs/intro/install/">Installing Helm</a></p>
@@ -265,7 +260,7 @@
 
 <p>我們來看看其中一個常用得例子<code>Redis</code>.</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ helm search hub redis</span><br></pre></td></tr></table></figure>
-<p>結果顯示有超過15種Charts是支援<code>Redis</code>的，且提供的組織皆不同。<br>其中一個最有名且維護即時的是<code>Bitnami</code>.<br>所以我們縮小範圍來看看：</p>
+<p>你可以看到結果有超過15種Charts是支援<code>Redis</code>的，且來自各個不同社群提供。<br>其中一個最有名且維護即時的是<code>Bitnami</code>.<br>所以我們縮小範圍來看看：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ helm search hub redis | grep bitnami</span><br></pre></td></tr></table></figure>
 <h4 id="添加至repo"><a href="#添加至repo" class="headerlink" title="添加至repo"></a>添加至repo</h4><p>可以看到在<code>Bitnami</code>中，每個chart都有一個public repo.</p>
 <p>也就是說，使用者必須藉由添加repo才能access <code>Bitnami</code>所提供的<code>redis</code> chart.</p>
@@ -312,13 +307,22 @@
 <p>連結至外部database：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ redis-cli -h 127.0.0.1 -p 6379 -a <span class="variable">$REDIS_PASSWORD</span> ping</span><br></pre></td></tr></table></figure>
 <p>如果你看到回應<code>PONG</code> 那就代表你已經成功連結上由你的Helm所建立的Redis application。</p>
-<h4 id="移除-Redis"><a href="#移除-Redis" class="headerlink" title="移除 Redis"></a>移除 Redis</h4><p>上述的步驟中，我們已經成功讓redis運行起來，現在我們要來把它移除乾淨了：</p>
+<h4 id="移除-Redis"><a href="#移除-Redis" class="headerlink" title="移除 Redis"></a>移除 Redis</h4><p>上述的步驟中，我們已經成功讓redis運行起來，現在我們要來把它刪除乾淨了：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ helm delete my-redis -n redis</span><br></pre></td></tr></table></figure>
 <p>值得一提的是，無論多麼複雜的chart，只要利用<code>delete</code>都可以刪除乾淨，唯一留下的只是k8s所建立的namespace。</p>
-<p>namespace也可以利用以下刪除：</p>
+<p>你可以檢查一下helm chart lists.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ helm ls</span><br></pre></td></tr></table></figure>
+
+<p>namespace也可以利用以下command刪除：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl delete namespace redis</span><br></pre></td></tr></table></figure>
 
-<p>在下一篇文章中，筆者會實際演練如何建立一個自定義的chart，也就是利用helm去建立一個客製化的chart，這在cloud development中市很常見的方式。</p>
+<p>此篇文章我們了解到:</p>
+<ul>
+<li>如何列出和搜尋public charts,</li>
+<li>如何列出和添加repositories,</li>
+<li>如何建立和部署public Helm charts.</li>
+</ul>
+<p>在下一篇文章中，將會實際演練如何建立一個自定義的chart，也就是利用helm去建立一個客製化的chart，這在cloud development中是很常見的方式。</p>
 
     </div>
 
@@ -338,11 +342,11 @@
 
         
     <div class="post-nav">
-      <div class="post-nav-item">
-    <a href="/tw/2020/09/19/test/" rel="prev" title="????">
-      <i class="fa fa-chevron-left"></i> ????
-    </a></div>
       <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/tw/2020/09/22/Helm%E5%AF%A6%E4%BD%9C%E6%BC%94%E7%B7%B4%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E5%BB%BA%E7%AB%8B%E8%87%AA%E5%AE%9A%E7%BE%A9%E7%9A%84Chart/" rel="next" title="Helm實作演練（二）：建立客製化的Chart">
+      Helm實作演練（二）：建立客製化的Chart <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -427,7 +431,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tw/tags/">
           
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">4</span>
         <span class="site-state-item-name">標籤</span></a>
       </div>
   </nav>
@@ -468,19 +472,19 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="總字數">3k</span>
+    <span title="總字數">8k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="所需總閱讀時間">3 分鐘</span>
+    <span title="所需總閱讀時間">7 分鐘</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 強力驅動
   </div>
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">word counts: 1.1k</span>
+  <span class="post-count">word counts: 2.7k</span>
 </div>
 
 

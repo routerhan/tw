@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/tw/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/tw/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/tw/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/tw/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/tw/css/main.css">
+
+
+<link rel="stylesheet" href="/tw/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/tw/lib/pace/pace-theme-bounce.min.css">
+  <script src="/tw/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"routerhan.github.io","root":"/tw/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="閱讀這篇文章後你將會學到：  了解如何從自定義的resources建立一個 Helm charts。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Helm實作演練（二）：建立客製化的Chart">
+<meta property="og:url" content="https://routerhan.github.io/tw/2020/09/22/Helm%E5%AF%A6%E4%BD%9C%E6%BC%94%E7%B7%B4%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E5%BB%BA%E7%AB%8B%E8%87%AA%E5%AE%9A%E7%BE%A9%E7%9A%84Chart/index.html">
+<meta property="og:site_name" content="Chen&#39;s Blog">
+<meta property="og:description" content="閱讀這篇文章後你將會學到：  了解如何從自定義的resources建立一個 Helm charts。">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2020-09-22T13:39:00.000Z">
+<meta property="article:modified_time" content="2020-09-23T16:28:06.735Z">
+<meta property="article:author" content="Ching-Han">
+<meta property="article:tag" content="Helm">
+<meta property="article:tag" content="Kubeneters">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://routerhan.github.io/tw/2020/09/22/Helm%E5%AF%A6%E4%BD%9C%E6%BC%94%E7%B7%B4%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E5%BB%BA%E7%AB%8B%E8%87%AA%E5%AE%9A%E7%BE%A9%E7%9A%84Chart/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-TW'
+  };
+</script>
+
+  <title>Helm實作演練（二）：建立客製化的Chart | Chen's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/tw/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Chen's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/tw/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/tw/about/" rel="section"><i class="fa fa-user fa-fw"></i>關於</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tw/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/tw/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/tw/../" rel="section"><i class="fa fa-heartbeat fa-fw"></i>English</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://routerhan.github.io/tw/2020/09/22/Helm%E5%AF%A6%E4%BD%9C%E6%BC%94%E7%B7%B4%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E5%BB%BA%E7%AB%8B%E8%87%AA%E5%AE%9A%E7%BE%A9%E7%9A%84Chart/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/tw/images/avatar.gif">
+      <meta itemprop="name" content="Ching-Han">
+      <meta itemprop="description" content="A Learning Note">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chen's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Helm實作演練（二）：建立客製化的Chart
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+
+              <time title="創建時間：2020-09-22 15:39:00" itemprop="dateCreated datePublished" datetime="2020-09-22T15:39:00+02:00">2020-09-22</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新於</span>
+                <time title="修改時間：2020-09-23 18:28:06" itemprop="dateModified" datetime="2020-09-23T18:28:06+02:00">2020-09-23</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="閱讀次數" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">閱讀次數：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="文章字數">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">文章字數：</span>
+              <span>4.9k</span>
+            </span>
+            <span class="post-meta-item" title="所需閱讀時間">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+              <span>4 分鐘</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>閱讀這篇文章後你將會學到：</p>
+<ul>
+<li>了解如何從自定義的resources建立一個 Helm charts。<a id="more"></a>
+
+
+
+</li>
+</ul>
+<h3 id="Chart是什麼？"><a href="#Chart是什麼？" class="headerlink" title="Chart是什麼？"></a>Chart是什麼？</h3><h4 id="基本概念與架構"><a href="#基本概念與架構" class="headerlink" title="基本概念與架構"></a>基本概念與架構</h4><p>原則上Chart這個概念是Helm定義出來，用以部署的一個單位。也就可以想成利用Helm這個工具定義出一個chart，並且快速部署到k8s。</p>
+<p>你可能會想到，那如果更新chart呢？或者想要同一個chart部署到不同地方？Helm針對部署到k8s的chart都當成一個<code>release</code>。</p>
+<p>更簡單來說，Helm chart就是包含k8s那一堆API object的定義，加上利用Chart來組建<code>templete</code>的概念，而衍生出用來管理k8s workload發布與部署的工具。Helm就是個建立在k8s上的DevOps工具。</p>
+<p>我們來看看一個Chart，裡面究竟有什麼：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ tree app-chartapp-chart/</span><br><span class="line">├── charts</span><br><span class="line">├── Chart.yaml</span><br><span class="line">├── templates</span><br><span class="line">│   ├── deployment.yaml</span><br><span class="line">│   ├── serviceaccount.yaml</span><br><span class="line">│   ├── ....</span><br><span class="line">└── values.yaml</span><br></pre></td></tr></table></figure>
+<h5 id="templates"><a href="#templates" class="headerlink" title="templates"></a>templates</h5><p> <code>templates/</code>：此目錄顧名思義就是存放 template 檔案的位置，佈署時整個目錄會送交到 template rendering engine(目前架構中由 Helm Library 負責此項工作)，搭配其他傳入參數後，產生結果後送給 k8s API server</p>
+<h5 id="values"><a href="#values" class="headerlink" title="values"></a>values</h5><p><code>values.yaml</code>：此檔案包含了 <code>templates/</code> 目錄中的檔案中所需要的預設值，可讓使用者可以透過 <code>helm install</code> 或是 <code>helm upgrade</code> 來 override，進而產生出不同的 release 內容。這也是使用者可以經由<code>terminal</code>覆寫的variable，像是<code>--set</code>。</p>
+<h5 id="chart"><a href="#chart" class="headerlink" title="chart"></a>chart</h5><p><code>charts/</code>：此目錄可能包含了其他不同的 chart，也可稱為 subcharts<br><code>Chart.yaml</code>：此檔案紀錄這個chart的meta data.</p>
+<h3 id="建立一個Chart"><a href="#建立一個Chart" class="headerlink" title="建立一個Chart"></a>建立一個Chart</h3><p>接著我們建立一個Helm chart，可以利用以下helm command快速生成一個chart樣板。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">helm create app-chart</span><br></pre></td></tr></table></figure>
+<h4 id="生成的Chart架構"><a href="#生成的Chart架構" class="headerlink" title="生成的Chart架構"></a>生成的Chart架構</h4><p>來看Helm自動生成的基本chart架構：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">$ tree app-chartapp-chart</span><br><span class="line">├── charts</span><br><span class="line">├── Chart.yaml</span><br><span class="line">├── templates</span><br><span class="line">│   ├── deployment.yaml</span><br><span class="line">│   ├── helpers.tpl</span><br><span class="line">│   ├── ingress.yaml</span><br><span class="line">│   ├── NOTES.txt</span><br><span class="line">│   ├── serviceaccount.yaml</span><br><span class="line">│   ├── service.yaml</span><br><span class="line">│   └── tests</span><br><span class="line">│       └── test-connection.yaml</span><br><span class="line">└── values.yaml</span><br><span class="line"></span><br><span class="line">3 directories, 9 files</span><br></pre></td></tr></table></figure>
+
+<h4 id="Templete的功能"><a href="#Templete的功能" class="headerlink" title="Templete的功能"></a>Templete的功能</h4><p>所有你想要利用Helm來部署到k8s的定義resources都是放到<code>templetes/</code>資料夾裡，例如<code>kind: Deployment</code>：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">$cat</span> <span class="string">app-chart/templates/deployment.yaml</span> <span class="string">|</span> <span class="string">grep</span> <span class="string">&#x27;kind:&#x27;</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> &#123;&#123; <span class="string">include</span> <span class="string">&quot;app-chart.fullname&quot;</span> <span class="string">.</span> &#125;&#125;</span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    &#123;&#123;<span class="bullet">-</span> <span class="string">include</span> <span class="string">&quot;app-chart.labels&quot;</span> <span class="string">.</span> <span class="string">|</span> <span class="string">nindent</span> <span class="number">4</span> &#125;&#125;</span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="string">...</span></span><br></pre></td></tr></table></figure>
+
+<p>你可以看到這個<code>yaml</code>就跟在k8s部署的定義架構上並沒什麼不同，但直得注意的是，有些值被<code>&#123;&#123; .. &#125;&#125;</code>包裹著，這些就是helm所提供的templeting功能，這些值可以隨使用者意願做設定，不同值也代表一個新的templete。</p>
+<p>我們接著來看看<code>deployment</code>中的container image 定義：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ cat app-chart&#x2F;templates&#x2F;deployment.yaml | grep &#39;image:&#39; -n -C3</span><br><span class="line"></span><br><span class="line">&#96;&#96;&#96;yaml</span><br><span class="line">	- name: &#123;&#123; .Chart.Name &#125;&#125;</span><br><span class="line">          securityContext:</span><br><span class="line">            &#123;&#123;- toYaml .Values.securityContext | nindent 12 &#125;&#125;</span><br><span class="line">          image: &quot;&#123;&#123; .Values.image.repository &#125;&#125;:&#123;&#123; .Chart.AppVersion &#125;&#125;&quot;</span><br><span class="line">          imagePullPolicy: &#123;&#123; .Values.image.pullPolicy &#125;&#125;</span><br><span class="line">          ports:</span><br><span class="line">            - name: http</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>注意到在<code>image</code>可以看到<code>image: &quot;&#123;&#123; .Values.image.repository &#125;&#125;</code>，也就是說container name是從<code>Values</code>這個property去獲取的，也是可以隨使用者意願改變，並且這些可變的值都被統一管理並定義在<code>values.yaml</code>中。</p>
+<blockquote>
+<p>注意：injected value必須符合<code>&#123;&#123; .. &#125;&#125;</code>的格式</p>
+</blockquote>
+<h4 id="Values的功能"><a href="#Values的功能" class="headerlink" title="Values的功能"></a>Values的功能</h4><p>所有可傳入的值都被定義在<code>values.yaml</code>中，也可以設定預設值。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">$</span> <span class="string">cat</span> <span class="string">app-chart/values.yaml</span> <span class="string">|</span> <span class="string">grep</span> <span class="string">&#x27;repository&#x27;</span> <span class="string">-n</span> <span class="string">-C3</span></span><br><span class="line"></span><br><span class="line"><span class="attr">replicaCount:</span> <span class="number">1</span></span><br><span class="line"><span class="attr">image:</span></span><br><span class="line">  <span class="attr">repository:</span> <span class="string">nginx</span></span><br><span class="line">  <span class="attr">pullPolicy:</span> <span class="string">IfNotPresent</span></span><br><span class="line"><span class="attr">imagePullSecrets:</span> []</span><br></pre></td></tr></table></figure>
+
+<p>注意到templeting的key值是利用<code>dot (&#39;.&#39;) notation</code>來從<code>values.yaml</code>做引導並擷取，例如<code>Values.image.repository</code>的值就是<code>nginx</code>。</p>
+<p>在這個例子中，Helm建立一個預設為<code>nginx</code>的application。<br>至此，這個chart已經準備好部署到k8s了。一個完善的預設值應該被developer定義好，並做好README整理，這樣的chart在開發中才是有幫助的。</p>
+<h4 id="利用dry-run來檢查部署"><a href="#利用dry-run來檢查部署" class="headerlink" title="利用dry-run來檢查部署"></a>利用dry-run來檢查部署</h4><p>在真的部署到k8s之前，我們可以先利用<code>dry-run</code>去看看我們期待的值是否有被傳入到<code>templete</code>中。這個動作會列出所有即將部署到k8s的resources，可以供使用者確認所有被傳入的值，這個步驟並不會真的安裝chart，只是在<code>console</code>檢查而已。</p>
+<p>我們來看看container image name是否如被inject到templete中：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">$</span> <span class="string">helm</span> <span class="string">install</span> <span class="string">my-app</span> <span class="string">./app-chart</span> <span class="string">--dry-run</span> <span class="string">--debug</span> <span class="string">|</span> <span class="string">grep</span> <span class="string">&#x27;image: &quot;&#x27;</span> <span class="string">-n</span> <span class="string">-C3</span></span><br><span class="line"></span><br><span class="line"><span class="attr">install.go:158:</span> [<span class="string">debug</span>] <span class="attr">Original chart version:</span> <span class="string">&quot;&quot;</span></span><br><span class="line"><span class="attr">install.go:175:</span> [<span class="string">debug</span>] <span class="attr">CHART PATH:</span> <span class="string">/root/app-chart</span></span><br><span class="line"><span class="string">...</span></span><br><span class="line">     <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">app-chart</span></span><br><span class="line">       <span class="string">securityContext:&#123;&#125;</span></span><br><span class="line">       <span class="attr">image:</span> <span class="string">&quot;nginx:1.16.0&quot;</span></span><br><span class="line">       <span class="attr">imagePullPolicy:</span> <span class="string">IfNotPresent</span></span><br><span class="line">       <span class="attr">ports:</span></span><br><span class="line">         <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">http</span></span><br><span class="line"><span class="string">...</span></span><br></pre></td></tr></table></figure>
+<p>可以看到<code>ImagePullPolicy</code>就如在<code>values.yaml</code>中的預設值一樣設為<code>IfNotPresent</code>。 一般來說，在部署到k8s前我們會到<code>values.yaml</code> policy value，但經常我們在開發環境做本地測試時，並不想每次有改變都去更改<code>values.yaml</code>檔案，所以經常用到<code>--set</code> command去覆寫預設值。就如以下，我們利用<code>--set</code>去更改<code>ImagePullPolicy</code>的值為<code>Always</code>。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">$</span> <span class="string">helm</span> <span class="string">install</span> <span class="string">my-app</span> <span class="string">./app-chart</span> <span class="string">--dry-run</span> <span class="string">--debug</span> <span class="string">--set</span> <span class="string">image.pullPolicy=Always</span> <span class="string">|</span> <span class="string">grep</span> <span class="string">&#x27;image: &quot;&#x27;</span> <span class="string">-n</span> <span class="string">-C3</span></span><br><span class="line"></span><br><span class="line"><span class="attr">install.go:158:</span> [<span class="string">debug</span>] <span class="attr">Original chart version:</span> <span class="string">&quot;&quot;</span></span><br><span class="line"><span class="attr">install.go:175:</span> [<span class="string">debug</span>] <span class="attr">CHART PATH:</span> <span class="string">/root/app-chart</span></span><br><span class="line"><span class="string">...</span></span><br><span class="line">     <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">app-chart</span></span><br><span class="line">       <span class="string">securityContext:&#123;&#125;</span></span><br><span class="line">       <span class="attr">image:</span> <span class="string">&quot;nginx:1.16.0&quot;</span></span><br><span class="line">       <span class="attr">imagePullPolicy:</span> <span class="string">Always</span></span><br><span class="line">       <span class="attr">ports:</span></span><br><span class="line">         <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">http</span></span><br><span class="line"><span class="string">...</span></span><br></pre></td></tr></table></figure>
+<p>當一切確認ok時，我們可以安裝chart並部署到k8s了。</p>
+<h4 id="部署自定義Chart"><a href="#部署自定義Chart" class="headerlink" title="部署自定義Chart"></a>部署自定義Chart</h4><p>接著利用<code>install</code> command將我們放置在<code>templete/</code>中的<code>yaml</code>都部署到k8s上。</p>
+<p>同時把<code>imagePullPolicy</code>覆寫為Always:</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">$</span> <span class="string">helm</span> <span class="string">install</span> <span class="string">my-app</span> <span class="string">./app-chart</span> <span class="string">--set</span> <span class="string">image.pullPolicy=Always</span></span><br><span class="line"></span><br><span class="line"><span class="attr">NAME:</span> <span class="string">my-app</span></span><br><span class="line"><span class="attr">LAST DEPLOYED:</span> <span class="string">Sat</span> <span class="string">Sep</span> <span class="number">19</span> <span class="number">20</span><span class="string">:06:40</span> <span class="number">2020</span></span><br><span class="line"><span class="attr">NAMESPACE:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">STATUS:</span> <span class="string">deployed</span></span><br><span class="line"><span class="attr">REVISION:</span> <span class="number">1</span></span><br><span class="line"><span class="attr">NOTES:</span></span><br></pre></td></tr></table></figure>
+
+<p>獲取URL可以用以下commands:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> POD_NAME=$(kubectl get pods --namespace default -l <span class="string">&quot;app.kubernetes.io/name=app-chart,app.kubernetes.io/instance=my-app&quot;</span> -o jsonpath=<span class="string">&quot;&#123;.items[0].metadata.name&#125;&quot;</span>)</span><br><span class="line"></span><br><span class="line">kubectl --namespace default port-forward <span class="variable">$POD_NAME</span> 8080:80</span><br></pre></td></tr></table></figure>
+
+<p>執行之後，我們的app就會啟動了：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">$</span> <span class="string">kubectl</span> <span class="string">get</span> <span class="string">deployments,service</span></span><br><span class="line"></span><br><span class="line"><span class="string">NAME</span>                               <span class="string">READY</span>   <span class="string">UP-TO-DATE</span>   <span class="string">AVAILABLE</span>   <span class="string">AGE</span></span><br><span class="line"><span class="string">deployment.apps/my-app-app-chart</span>   <span class="number">1</span><span class="string">/1</span>     <span class="number">1</span>            <span class="number">1</span>           <span class="string">38s</span></span><br><span class="line"></span><br><span class="line"><span class="string">NAME</span>                       <span class="string">TYPE</span>        <span class="string">CLUSTER-IP</span>      <span class="string">EXTERNAL-IP</span>   <span class="string">PORT(S)</span>   <span class="string">AGE</span></span><br><span class="line"><span class="string">service/kubernetes</span>         <span class="string">ClusterIP</span>   <span class="number">10.96</span><span class="number">.0</span><span class="number">.1</span>       <span class="string">&lt;none&gt;</span>        <span class="number">443</span><span class="string">/TCP</span>   <span class="string">50m</span></span><br><span class="line"><span class="string">service/my-app-app-chart</span>   <span class="string">ClusterIP</span>   <span class="number">10.106</span><span class="number">.234</span><span class="number">.21</span>   <span class="string">&lt;none&gt;</span>        <span class="number">80</span><span class="string">/TCP</span>    <span class="string">38s</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="一些實用的commands"><a href="#一些實用的commands" class="headerlink" title="一些實用的commands"></a>一些實用的commands</h4><p>在helm中，有一些實用的commands：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">helm --<span class="built_in">help</span></span><br></pre></td></tr></table></figure>
+<p>可以確認有哪些usages。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">helm lint</span><br></pre></td></tr></table></figure>
+<p>可以檢查你的chart是否有errors，這些errors常常是再利用Go templating 時發生的sytanx errors，肉眼是難見到的。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">helm <span class="built_in">test</span></span><br></pre></td></tr></table></figure>
+<p>helm test 可以被用在CI/CD pipelines中，開發環境也很常使用。</p>
+<p>此篇文章我們了解到:</p>
+<ul>
+<li>自訂的chart提供什麼功能,</li>
+<li>如何利用chart使application運行起來,</li>
+<li>如何創造一個custom chart.</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tw/tags/helm/" rel="tag"># Helm</a>
+              <a href="/tw/tags/Kubeneters/" rel="tag"># Kubeneters</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/tw/2020/09/19/hello-world/" rel="prev" title="Helm實作演練（一）：利用公用的Chart做部署">
+      <i class="fa fa-chevron-left"></i> Helm實作演練（一）：利用公用的Chart做部署
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Chart%E6%98%AF%E4%BB%80%E9%BA%BC%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">Chart是什麼？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5%E8%88%87%E6%9E%B6%E6%A7%8B"><span class="nav-number">1.1.</span> <span class="nav-text">基本概念與架構</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#templates"><span class="nav-number">1.1.1.</span> <span class="nav-text">templates</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#values"><span class="nav-number">1.1.2.</span> <span class="nav-text">values</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#chart"><span class="nav-number">1.1.3.</span> <span class="nav-text">chart</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BB%BA%E7%AB%8B%E4%B8%80%E5%80%8BChart"><span class="nav-number">2.</span> <span class="nav-text">建立一個Chart</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E7%9A%84Chart%E6%9E%B6%E6%A7%8B"><span class="nav-number">2.1.</span> <span class="nav-text">生成的Chart架構</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Templete%E7%9A%84%E5%8A%9F%E8%83%BD"><span class="nav-number">2.2.</span> <span class="nav-text">Templete的功能</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Values%E7%9A%84%E5%8A%9F%E8%83%BD"><span class="nav-number">2.3.</span> <span class="nav-text">Values的功能</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%A9%E7%94%A8dry-run%E4%BE%86%E6%AA%A2%E6%9F%A5%E9%83%A8%E7%BD%B2"><span class="nav-number">2.4.</span> <span class="nav-text">利用dry-run來檢查部署</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%83%A8%E7%BD%B2%E8%87%AA%E5%AE%9A%E7%BE%A9Chart"><span class="nav-number">2.5.</span> <span class="nav-text">部署自定義Chart</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E5%AF%A6%E7%94%A8%E7%9A%84commands"><span class="nav-number">2.6.</span> <span class="nav-text">一些實用的commands</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Ching-Han</p>
+  <div class="site-description" itemprop="description">A Learning Note</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/tw/archives">
+          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/tw/categories/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分類</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tw/tags/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">標籤</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/routerhan" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;routerhan" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020-09 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ching-Han</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="總字數">8k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">7 分鐘</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 強力驅動
+  </div>
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">word counts: 2.7k</span>
+</div>
+
+
+
+        
+<div class="busuanzi-count">
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="訪客總數">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="總瀏覽次數">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/tw/lib/anime.min.js"></script>
+  <script src="true"></script>
+  <script src="/tw/lib/velocity/velocity.min.js"></script>
+  <script src="/tw/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/tw/js/utils.js"></script>
+
+<script src="/tw/js/motion.js"></script>
+
+
+<script src="/tw/js/schemes/pisces.js"></script>
+
+
+<script src="/tw/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+
+    </div>
+</body>
+</html>
