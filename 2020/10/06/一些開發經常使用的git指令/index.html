@@ -22,20 +22,20 @@
     var CONFIG = {"hostname":"routerhan.github.io","root":"/tw/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Command Example Description    ls 1. $ ls2. $ ls –l 1. It lists files in the current directory. 2. It lists files in the long format.   cd 1. $ cd2. $ cd  test3. $ cd .. 1. It changes directory to">
+  <meta name="description" content="這裡記錄下我在IBM參與open source project時經常用的git command. 這篇文章提到：  在常規的開源專案開發時常用的version control 觀念。 在遞交PR前必須做的幾件事。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="常用的Bash指令(待補)">
-<meta property="og:url" content="https://routerhan.github.io/tw/2020/09/29/%E5%B8%B8%E7%94%A8%E7%9A%84Bash%E6%8C%87%E4%BB%A4/index.html">
+<meta property="og:title" content="如何在open source project遞交PR">
+<meta property="og:url" content="https://routerhan.github.io/tw/2020/10/06/%E4%B8%80%E4%BA%9B%E9%96%8B%E7%99%BC%E7%B6%93%E5%B8%B8%E4%BD%BF%E7%94%A8%E7%9A%84git%E6%8C%87%E4%BB%A4/index.html">
 <meta property="og:site_name" content="Chen&#39;s Blog">
-<meta property="og:description" content="Command Example Description    ls 1. $ ls2. $ ls –l 1. It lists files in the current directory. 2. It lists files in the long format.   cd 1. $ cd2. $ cd  test3. $ cd .. 1. It changes directory to">
+<meta property="og:description" content="這裡記錄下我在IBM參與open source project時經常用的git command. 這篇文章提到：  在常規的開源專案開發時常用的version control 觀念。 在遞交PR前必須做的幾件事。">
 <meta property="og:locale" content="zh_TW">
-<meta property="article:published_time" content="2020-09-29T08:22:00.000Z">
-<meta property="article:modified_time" content="2020-10-06T19:09:21.940Z">
+<meta property="article:published_time" content="2020-10-06T19:11:00.000Z">
+<meta property="article:modified_time" content="2020-10-06T20:31:03.775Z">
 <meta property="article:author" content="Ching-Han">
-<meta property="article:tag" content="Bash">
+<meta property="article:tag" content="Git">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://routerhan.github.io/tw/2020/09/29/%E5%B8%B8%E7%94%A8%E7%9A%84Bash%E6%8C%87%E4%BB%A4/">
+<link rel="canonical" href="https://routerhan.github.io/tw/2020/10/06/%E4%B8%80%E4%BA%9B%E9%96%8B%E7%99%BC%E7%B6%93%E5%B8%B8%E4%BD%BF%E7%94%A8%E7%9A%84git%E6%8C%87%E4%BB%A4/">
 
 
 <script id="page-configurations">
@@ -48,7 +48,7 @@
   };
 </script>
 
-  <title>常用的Bash指令(待補) | Chen's Blog</title>
+  <title>如何在open source project遞交PR | Chen's Blog</title>
   
 
 
@@ -168,7 +168,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
-    <link itemprop="mainEntityOfPage" href="https://routerhan.github.io/tw/2020/09/29/%E5%B8%B8%E7%94%A8%E7%9A%84Bash%E6%8C%87%E4%BB%A4/">
+    <link itemprop="mainEntityOfPage" href="https://routerhan.github.io/tw/2020/10/06/%E4%B8%80%E4%BA%9B%E9%96%8B%E7%99%BC%E7%B6%93%E5%B8%B8%E4%BD%BF%E7%94%A8%E7%9A%84git%E6%8C%87%E4%BB%A4/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/tw/images/avatar.gif">
@@ -181,7 +181,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          常用的Bash指令(待補)
+          如何在open source project遞交PR
         </h1>
 
         <div class="post-meta">
@@ -190,23 +190,17 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">發表於</span>
+              
 
-              <time title="創建時間：2020-09-29 10:22:00" itemprop="dateCreated datePublished" datetime="2020-09-29T10:22:00+02:00">2020-09-29</time>
+              <time title="創建時間：2020-10-06 21:11:00 / 修改時間：22:31:03" itemprop="dateCreated datePublished" datetime="2020-10-06T21:11:00+02:00">2020-10-06</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新於</span>
-                <time title="修改時間：2020-10-06 21:09:21" itemprop="dateModified" datetime="2020-10-06T21:09:21+02:00">2020-10-06</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
               </span>
               <span class="post-meta-item-text">分類於</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/tw/categories/Bash/" itemprop="url" rel="index"><span itemprop="name">Bash</span></a>
+                  <a href="/tw/categories/DevOp/" itemprop="url" rel="index"><span itemprop="name">DevOp</span></a>
                 </span>
             </span>
 
@@ -223,7 +217,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">文章字數：</span>
-              <span>312</span>
+              <span>1.5k</span>
             </span>
             <span class="post-meta-item" title="所需閱讀時間">
               <span class="post-meta-item-icon">
@@ -242,30 +236,73 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <table>
-<thead>
-<tr>
-<th>Command</th>
-<th>Example</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>ls</code></td>
-<td>1. <code>$ ls</code><br/>2. $ <code>ls –l</code></td>
-<td>1. It lists files in the current directory.<br/> 2. It lists files in the long format.</td>
-</tr>
-<tr>
-<td><code>cd</code></td>
-<td>1. $ <code>cd</code><br/>2. $ <code>cd  test</code><br/>3. $ <code>cd ..</code></td>
-<td>1. It changes directory to your home directory.<br/> 2.  It changes directory to test.<br/> 3. It moves back to one directory or to the parent directory of your current directory.</td>
-</tr>
-<tr>
-<td><code>mkdir</code></td>
-<td><code>$ mkdir test</code></td>
-<td>It creates a directory called test.</td>
-</tr>
-</tbody></table>
+        <p>這裡記錄下我在IBM參與open source project時經常用的git command.</p>
+<p>這篇文章提到：</p>
+<ul>
+<li>在常規的開源專案開發時常用的version control 觀念。</li>
+<li>在遞交PR前必須做的幾件事。<a id="more"></a>
+
+
+
+</li>
+</ul>
+<h3 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h3><h4 id="開發基本觀念"><a href="#開發基本觀念" class="headerlink" title="開發基本觀念"></a>開發基本觀念</h4><p>一般來說，在開發環境裡我們不會對已經上線(<code>produciton code</code>)直接進行開發。而大多數專案都以個別<code>git repository</code>來管理，為了避免直接對已上線的code (repository) 進行開發，往往會將專案 <code>fork</code> 到自己的 git account 底下進行開發。</p>
+<p>git command中 <code>fork</code>的觀念，有以下主要功能：</p>
+<blockquote>
+<p>同步最新的 production code 到 fork 自己的git account下<br>PR是由 froked repository 遞交到 production repository</p>
+</blockquote>
+<h3 id="遞交PR前該做的事"><a href="#遞交PR前該做的事" class="headerlink" title="遞交PR前該做的事"></a>遞交PR前該做的事</h3><p>接著我們列出遞交PR前，必須確保哪些步驟，才能保證PR不會與production code產生conflicts。</p>
+<p><strong>每次</strong>遞交PR時，必須做到以下步驟：</p>
+<blockquote>
+<p>更新forked repo到最新版本 (latest production version)<br>確認 feature branch 已經 rebase<br>壓縮commits到一個</p>
+</blockquote>
+<h4 id="更新forked-repo"><a href="#更新forked-repo" class="headerlink" title="更新forked repo"></a>更新forked repo</h4><p>本地的repo (forked repo) 必須與 <code>upstream/master</code> 是一致的。</p>
+<p>第一步，<code>checkout</code>到本地 <code>master</code> 分支：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git checkout master</span><br></pre></td></tr></table></figure>
+
+<p>抓取 <code>fetch</code> 遠端 <code>master</code> (upstream)，也就是當前的 <code>production code</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git fetch upstream</span><br></pre></td></tr></table></figure>
+
+<p>合併(<code>merge</code>)遠端 <code>upstream/master</code> 到 本地的 forked <code>origin/master</code> 分支：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git merge upstream&#x2F;master</span><br><span class="line">git push</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="Rebase-本地-master"><a href="#Rebase-本地-master" class="headerlink" title="Rebase 本地 master"></a>Rebase 本地 master</h4><p>這一步用意在於，確保 feature branch 在最新版的 code 上仍舊可以運行。</p>
+<p>第一步，checkout 到 feature branch:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git checkout migrate_taskrun</span><br></pre></td></tr></table></figure>
+
+<p>Rebase feature branch with master:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git rebase master</span><br></pre></td></tr></table></figure>
+
+<p>如果有 conflicts，依據提示去解決它，通常會是 接受incoming changes (from PR branch)，然後 <code>add</code> 這些 files:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git add go.sum generate_taskrun.go generate_taskrun_test.go</span><br><span class="line">git rebase --continue</span><br></pre></td></tr></table></figure>
+
+<p>當確認沒有conflicts 且 code 如預期運行，就可以push：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push --force</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="壓縮commits"><a href="#壓縮commits" class="headerlink" title="壓縮commits"></a>壓縮commits</h4><p>現在我們已經確認開發的 feature code 跟 production code 相容，並且運行正常。</p>
+<p>這時候我們回過頭看看，當時在開發時所建立的<code>commits</code>是不是有必要遞交到 prodction repo中，通常會有許多過渡用的 bug fixing commit，這些通常都無意義，需要被壓縮。</p>
+<blockquote>
+<p>如果開發中有很多不必要的commits，壓縮至一個</p>
+</blockquote>
+<p>首先我們要先檢查一下 commit log:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git log --oneline</span><br></pre></td></tr></table></figure>
+
+<p>接著利用rebase幫我們選擇要留下（捨棄）的commits：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git rebase -i &lt;#179&gt;</span><br></pre></td></tr></table></figure>
+
+<p>你會進入以下頁面：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">pick</span> <span class="string">8d2a536</span> <span class="string">Migrate</span> <span class="string">taskrun</span> <span class="string">tests</span> <span class="string">to</span> <span class="string">ginkgo</span></span><br><span class="line"><span class="string">f</span> <span class="string">4fd0d8d</span> <span class="string">Optmize</span> <span class="string">the</span> <span class="string">tests</span></span><br><span class="line"><span class="string">f</span> <span class="string">31a81bc</span> <span class="string">Add</span> <span class="string">changes</span> <span class="string">on</span> <span class="string">go.sum</span></span><br></pre></td></tr></table></figure>
+
+<p>選好要留下的commit （往往是第一個具有敘述的feature info）<br>儲存並退出，最後一步就是 <code>push</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push --force</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
 
     </div>
 
@@ -275,7 +312,7 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tw/tags/Bash/" rel="tag"># Bash</a>
+              <a href="/tw/tags/Git/" rel="tag"># Git</a>
           </div>
 
         
@@ -284,13 +321,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/tw/2020/09/22/Helm%E5%AF%A6%E4%BD%9C%E6%BC%94%E7%B7%B4%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E5%BB%BA%E7%AB%8B%E8%87%AA%E5%AE%9A%E7%BE%A9%E7%9A%84Chart/" rel="prev" title="Helm實作演練（二）：建立客製化的Chart">
-      <i class="fa fa-chevron-left"></i> Helm實作演練（二）：建立客製化的Chart
+    <a href="/tw/2020/09/29/%E5%B8%B8%E7%94%A8%E7%9A%84Bash%E6%8C%87%E4%BB%A4/" rel="prev" title="常用的Bash指令(待補)">
+      <i class="fa fa-chevron-left"></i> 常用的Bash指令(待補)
     </a></div>
-      <div class="post-nav-item">
-    <a href="/tw/2020/10/06/%E4%B8%80%E4%BA%9B%E9%96%8B%E7%99%BC%E7%B6%93%E5%B8%B8%E4%BD%BF%E7%94%A8%E7%9A%84git%E6%8C%87%E4%BB%A4/" rel="next" title="如何在open source project遞交PR">
-      如何在open source project遞交PR <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -349,6 +383,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%95%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%96%8B%E7%99%BC%E5%9F%BA%E6%9C%AC%E8%A7%80%E5%BF%B5"><span class="nav-number">1.1.</span> <span class="nav-text">開發基本觀念</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%81%9E%E4%BA%A4PR%E5%89%8D%E8%A9%B2%E5%81%9A%E7%9A%84%E4%BA%8B"><span class="nav-number">2.</span> <span class="nav-text">遞交PR前該做的事</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9B%B4%E6%96%B0forked-repo"><span class="nav-number">2.1.</span> <span class="nav-text">更新forked repo</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Rebase-%E6%9C%AC%E5%9C%B0-master"><span class="nav-number">2.2.</span> <span class="nav-text">Rebase 本地 master</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A3%93%E7%B8%AEcommits"><span class="nav-number">2.3.</span> <span class="nav-text">壓縮commits</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
