@@ -30,7 +30,7 @@
 <meta property="og:description" content="閱讀這篇文章後你將會學到：  了解如何從自定義的resources建立一個 Helm charts。">
 <meta property="og:locale" content="zh_TW">
 <meta property="article:published_time" content="2020-09-22T13:39:00.000Z">
-<meta property="article:modified_time" content="2020-09-23T16:28:06.000Z">
+<meta property="article:modified_time" content="2020-10-06T16:43:36.412Z">
 <meta property="article:author" content="Ching-Han">
 <meta property="article:tag" content="Helm">
 <meta property="article:tag" content="Kubeneters">
@@ -199,7 +199,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新於</span>
-                <time title="修改時間：2020-09-23 18:28:06" itemprop="dateModified" datetime="2020-09-23T18:28:06+02:00">2020-09-23</time>
+                <time title="修改時間：2020-10-06 18:43:36" itemprop="dateModified" datetime="2020-10-06T18:43:36+02:00">2020-10-06</time>
               </span>
 
           
@@ -215,7 +215,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">文章字數：</span>
-              <span>4.9k</span>
+              <span>4.8k</span>
             </span>
             <span class="post-meta-item" title="所需閱讀時間">
               <span class="post-meta-item-icon">
@@ -260,7 +260,8 @@
 
 <p>你可以看到這個<code>yaml</code>就跟在k8s部署的定義架構上並沒什麼不同，但直得注意的是，有些值被<code>&#123;&#123; .. &#125;&#125;</code>包裹著，這些就是helm所提供的templeting功能，這些值可以隨使用者意願做設定，不同值也代表一個新的templete。</p>
 <p>我們接著來看看<code>deployment</code>中的container image 定義：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ cat app-chart&#x2F;templates&#x2F;deployment.yaml | grep &#39;image:&#39; -n -C3</span><br><span class="line"></span><br><span class="line">&#96;&#96;&#96;yaml</span><br><span class="line">	- name: &#123;&#123; .Chart.Name &#125;&#125;</span><br><span class="line">          securityContext:</span><br><span class="line">            &#123;&#123;- toYaml .Values.securityContext | nindent 12 &#125;&#125;</span><br><span class="line">          image: &quot;&#123;&#123; .Values.image.repository &#125;&#125;:&#123;&#123; .Chart.AppVersion &#125;&#125;&quot;</span><br><span class="line">          imagePullPolicy: &#123;&#123; .Values.image.pullPolicy &#125;&#125;</span><br><span class="line">          ports:</span><br><span class="line">            - name: http</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">$</span> <span class="string">cat</span> <span class="string">app-chart/templates/deployment.yaml</span> <span class="string">|</span> <span class="string">grep</span> <span class="string">&#x27;image:&#x27;</span> <span class="string">-n</span> <span class="string">-C3</span></span><br><span class="line">	<span class="bullet">-</span> <span class="attr">name:</span> &#123;&#123; <span class="string">.Chart.Name</span> &#125;&#125;</span><br><span class="line">          <span class="attr">securityContext:</span></span><br><span class="line">            &#123;&#123;<span class="bullet">-</span> <span class="string">toYaml</span> <span class="string">.Values.securityContext</span> <span class="string">|</span> <span class="string">nindent</span> <span class="number">12</span> &#125;&#125;</span><br><span class="line">          <span class="attr">image:</span> <span class="string">&quot;<span class="template-variable">&#123;&#123; .Values.image.repository &#125;&#125;</span>:<span class="template-variable">&#123;&#123; .Chart.AppVersion &#125;&#125;</span>&quot;</span></span><br><span class="line">          <span class="attr">imagePullPolicy:</span> &#123;&#123; <span class="string">.Values.image.pullPolicy</span> &#125;&#125;</span><br><span class="line">          <span class="attr">ports:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">http</span></span><br><span class="line"><span class="string">...</span></span><br></pre></td></tr></table></figure>
+
 <p>注意到在<code>image</code>可以看到<code>image: &quot;&#123;&#123; .Values.image.repository &#125;&#125;</code>，也就是說container name是從<code>Values</code>這個property去獲取的，也是可以隨使用者意願改變，並且這些可變的值都被統一管理並定義在<code>values.yaml</code>中。</p>
 <blockquote>
 <p>注意：injected value必須符合<code>&#123;&#123; .. &#125;&#125;</code>的格式</p>
@@ -321,7 +322,10 @@
     <a href="/tw/2020/09/19/hello-world/" rel="prev" title="Helm實作演練（一）：利用公用的Chart做部署">
       <i class="fa fa-chevron-left"></i> Helm實作演練（一）：利用公用的Chart做部署
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/tw/2020/09/29/%E5%B8%B8%E7%94%A8%E7%9A%84Bash%E6%8C%87%E4%BB%A4/" rel="next" title="常用的Bash指令(待補)">
+      常用的Bash指令(待補) <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -393,20 +397,20 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/tw/archives">
-          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-count">3</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/tw/categories/">
           
-        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-count">2</span>
         <span class="site-state-item-name">分類</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tw/tags/">
           
-        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">標籤</span></a>
       </div>
   </nav>
