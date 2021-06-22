@@ -22,20 +22,21 @@
     var CONFIG = {"hostname":"routerhan.github.io","root":"/tw/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Command Example Description    ls 1. $ ls2. $ ls –l 1. It lists files in the current directory. 2. It lists files in the long format.   cd 1. $ cd2. $ cd  test3. $ cd .. 1. It changes directory to">
+  <meta name="description" content="這裡記錄下我學習Golang一開始讓我有些苦惱的go routine已經concurrency的機制運作。 這篇文章提到：  並發性concurrency和並行性的不同。 並發性concurrency如何透過go routine實現。 一些常見的誤區。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="常用的Bash指令(待續)">
-<meta property="og:url" content="https://routerhan.github.io/tw/2020/09/29/%E5%B8%B8%E7%94%A8%E7%9A%84Bash%E6%8C%87%E4%BB%A4/index.html">
+<meta property="og:title" content="Go : Concurrency與go routine">
+<meta property="og:url" content="https://routerhan.github.io/tw/2021/06/22/Go-Concurrency%E4%B8%A6%E7%99%BC%E6%80%A7%E8%88%87go-routine/index.html">
 <meta property="og:site_name" content="Chen&#39;s Blog">
-<meta property="og:description" content="Command Example Description    ls 1. $ ls2. $ ls –l 1. It lists files in the current directory. 2. It lists files in the long format.   cd 1. $ cd2. $ cd  test3. $ cd .. 1. It changes directory to">
+<meta property="og:description" content="這裡記錄下我學習Golang一開始讓我有些苦惱的go routine已經concurrency的機制運作。 這篇文章提到：  並發性concurrency和並行性的不同。 並發性concurrency如何透過go routine實現。 一些常見的誤區。">
 <meta property="og:locale" content="zh_TW">
-<meta property="article:published_time" content="2020-09-29T08:22:00.000Z">
-<meta property="article:modified_time" content="2021-03-25T10:06:04.197Z">
+<meta property="article:published_time" content="2021-06-22T12:18:00.000Z">
+<meta property="article:modified_time" content="2021-06-22T12:41:36.893Z">
 <meta property="article:author" content="Ching-Han">
-<meta property="article:tag" content="Bash">
+<meta property="article:tag" content="go routine">
+<meta property="article:tag" content="concurrency">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://routerhan.github.io/tw/2020/09/29/%E5%B8%B8%E7%94%A8%E7%9A%84Bash%E6%8C%87%E4%BB%A4/">
+<link rel="canonical" href="https://routerhan.github.io/tw/2021/06/22/Go-Concurrency%E4%B8%A6%E7%99%BC%E6%80%A7%E8%88%87go-routine/">
 
 
 <script id="page-configurations">
@@ -48,7 +49,7 @@
   };
 </script>
 
-  <title>常用的Bash指令(待續) | Chen's Blog</title>
+  <title>Go : Concurrency與go routine | Chen's Blog</title>
   
 
 
@@ -168,7 +169,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
-    <link itemprop="mainEntityOfPage" href="https://routerhan.github.io/tw/2020/09/29/%E5%B8%B8%E7%94%A8%E7%9A%84Bash%E6%8C%87%E4%BB%A4/">
+    <link itemprop="mainEntityOfPage" href="https://routerhan.github.io/tw/2021/06/22/Go-Concurrency%E4%B8%A6%E7%99%BC%E6%80%A7%E8%88%87go-routine/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/tw/images/avatar.gif">
@@ -181,7 +182,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          常用的Bash指令(待續)
+          Go : Concurrency與go routine
         </h1>
 
         <div class="post-meta">
@@ -190,23 +191,17 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">發表於</span>
+              
 
-              <time title="創建時間：2020-09-29 10:22:00" itemprop="dateCreated datePublished" datetime="2020-09-29T10:22:00+02:00">2020-09-29</time>
+              <time title="創建時間：2021-06-22 14:18:00 / 修改時間：14:41:36" itemprop="dateCreated datePublished" datetime="2021-06-22T14:18:00+02:00">2021-06-22</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新於</span>
-                <time title="修改時間：2021-03-25 11:06:04" itemprop="dateModified" datetime="2021-03-25T11:06:04+01:00">2021-03-25</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
               </span>
               <span class="post-meta-item-text">分類於</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/tw/categories/Bash/" itemprop="url" rel="index"><span itemprop="name">Bash</span></a>
+                  <a href="/tw/categories/Golang/" itemprop="url" rel="index"><span itemprop="name">Golang</span></a>
                 </span>
             </span>
 
@@ -223,14 +218,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">文章字數：</span>
-              <span>2.5k</span>
+              <span>1.6k</span>
             </span>
             <span class="post-meta-item" title="所需閱讀時間">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
-              <span>2 分鐘</span>
+              <span>1 分鐘</span>
             </span>
 
         </div>
@@ -242,190 +237,55 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <table>
-<thead>
-<tr>
-<th>Command</th>
-<th>Example</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>ls</code></td>
-<td>1. <code>$ ls</code><br/>2. <code>$ ls –l</code></td>
-<td>1. It lists files in the current directory.<br/> 2. It lists files in the long format.</td>
-</tr>
-<tr>
-<td><code>cd</code></td>
-<td>1. <code>$ cd</code><br/>2. <code>$ cd  test</code><br/>3. <code>$ cd ..</code></td>
-<td>1. It changes directory to your home directory.<br/> 2.  It changes directory to test.<br/> 3. It moves back to one directory or to the parent directory of your current directory.</td>
-</tr>
-<tr>
-<td><code>mkdir</code></td>
-<td><code>$ mkdir test</code></td>
-<td>It creates a directory called test.</td>
-</tr>
-<tr>
-<td><code>rmdir</code></td>
-<td><code>$ rmdir test</code></td>
-<td>It removes a directory called test.</td>
-</tr>
-<tr>
-<td><code>cp</code></td>
-<td>1. <code>$ cp file1 test</code><br/>2. <code>$ cp file1 file1.bak </code></td>
-<td>1. It copies file1 to test directory. <br/> 2. It takes backup of file1.</td>
-</tr>
-<tr>
-<td><code>rm</code></td>
-<td><code>$ rm file1</code></td>
-<td>It removes or delete a file1.</td>
-</tr>
-<tr>
-<td><code>mv</code></td>
-<td><code>$ mv file1 file2</code></td>
-<td>It moves or renames file1 to file2 (depends on file2 type).</td>
-</tr>
-<tr>
-<td><code>more</code></td>
-<td><code>$ more</code></td>
-<td>It checks or display one page at a time.</td>
-</tr>
-<tr>
-<td><code>touch</code></td>
-<td><code>$ touch test</code></td>
-<td>It creates an empty file called test.</td>
-</tr>
-<tr>
-<td><code>cat</code></td>
-<td>1. <code>$ cat File1</code><br/>2. <code>$ cat test1 &gt; test2 </code></td>
-<td>1. It displays contents of File1. <br/> 2. It creates a new file test2 with the contents of test1.</td>
-</tr>
-<tr>
-<td><code>compress</code></td>
-<td><code>$ compress file1</code></td>
-<td>It reduces the size of file1 and creates a compressed file called file1.z and deletes file1.</td>
-</tr>
-<tr>
-<td><code>date</code></td>
-<td><code>$ date</code><br/> e.g. Output:Tuesday, September 12, 2020 06:58:06 AM MDT</td>
-<td>It displays current date and time.</td>
-</tr>
-<tr>
-<td><code>diff</code></td>
-<td><code>$ diff file1 file2</code></td>
-<td>It displays line by line difference between file1 and file2.</td>
-</tr>
-<tr>
-<td><code>find</code></td>
-<td><code>$ find . -name &#39;*.t&#39; -print</code></td>
-<td>It searches in the current directory and in all its subdirectories for files ending with .t and writes their names in the output.</td>
-</tr>
-<tr>
-<td><code>finger</code></td>
-<td><code>$ finger</code></td>
-<td>It displays information about the user.</td>
-</tr>
-<tr>
-<td><code>who</code></td>
-<td><code>$ who</code></td>
-<td>It lists the users those who are logged in on the machine.</td>
-</tr>
-<tr>
-<td><code>grep</code></td>
-<td>1. <code>$ grep Hello file1</code><br/>2. <code>$ grep -c Hello file1 </code></td>
-<td>1. It searches for the lines containing Hello in file1. <br/> 2. It gives count or number of lines that contains Hello in file1.</td>
-</tr>
-<tr>
-<td><code>kill</code></td>
-<td><code>$ kill 1488</code></td>
-<td>It kills the process which has PID as 1488.</td>
-</tr>
-<tr>
-<td><code>lpr</code></td>
-<td>1. <code>$ lpr -Pprinter1 test</code><br/>2. <code>$ lp file1 </code></td>
-<td>1. It sents file test to print it on printer1. <br/> 2. It prints file1</td>
-</tr>
-<tr>
-<td><code>man</code></td>
-<td><code>$ man ls</code></td>
-<td>It displays online manual or help about ls command.</td>
-</tr>
-<tr>
-<td><code>passwd</code></td>
-<td><code>$ passwd</code></td>
-<td>It is used to change the password.</td>
-</tr>
-<tr>
-<td><code>pwd</code></td>
-<td><code>$ pwd</code></td>
-<td>It displays present working directory.</td>
-</tr>
-<tr>
-<td><code>ps</code></td>
-<td><code>$ ps</code></td>
-<td>It displays the list of processes which are currently running on the machine.</td>
-</tr>
-<tr>
-<td><code>talk</code></td>
-<td><code>$ talk user1</code></td>
-<td>It is used to talk to the user1 who is currently logged into the same machine.</td>
-</tr>
-<tr>
-<td><code>wc</code></td>
-<td><code>$ wc file1</code></td>
-<td>It counts the number of <code>lines</code>, <code>words</code> and <code>characters</code> in file1.</td>
-</tr>
-<tr>
-<td><code>chmod</code></td>
-<td><code>$ chmod 744 file1</code></td>
-<td>It changes the permissions of file1 and assigns this permission <code>rwxr--r--</code>. <a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/Chmod">More chmod commands</a></td>
-</tr>
-<tr>
-<td><code>gzip</code></td>
-<td><code>$ gzip file1</code></td>
-<td>It compresses the file1. After compression file1 should look like this <code>file1.gz</code>.</td>
-</tr>
-<tr>
-<td><code>gunzip</code></td>
-<td><code>$ gunzip file1.gz </code></td>
-<td>It uncompresses the <code>file1.gz</code> After uncompressopm <code>file1.gz</code> should look like this, <code>file1</code>.</td>
-</tr>
-<tr>
-<td><code>history</code></td>
-<td><code>$ history</code></td>
-<td>It lists all the commands which are recently used.</td>
-</tr>
-<tr>
-<td><code>logname</code></td>
-<td><code>$ logname</code></td>
-<td>It prints log name of the user.</td>
-</tr>
-<tr>
-<td><code>uname</code></td>
-<td><code>$ uname</code></td>
-<td>It gives information about unix system which you are using.</td>
-</tr>
-<tr>
-<td><code>tty</code></td>
-<td><code>$ tty</code></td>
-<td>It displays the device name of termainal.</td>
-</tr>
-<tr>
-<td><code>sort</code></td>
-<td><code>$ sort file1</code></td>
-<td>It will sort the contents of file1 and displays sorted output on the screen.</td>
-</tr>
-<tr>
-<td><code>head</code></td>
-<td><code>$ head -15 file1</code></td>
-<td>It displays first 15 lines of the file.</td>
-</tr>
-<tr>
-<td><code>tail</code></td>
-<td><code>$ tail -15 file1</code></td>
-<td>It displays last 15 lines of the file.</td>
-</tr>
-</tbody></table>
+        <p>這裡記錄下我學習Golang一開始讓我有些苦惱的go routine已經concurrency的機制運作。</p>
+<p>這篇文章提到：</p>
+<ul>
+<li>並發性concurrency和並行性的不同。</li>
+<li>並發性concurrency如何透過go routine實現。</li>
+<li>一些常見的誤區。</li>
+</ul>
+<a id="more"></a>
+
+
+
+<h3 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h3><h4 id="多任務的好處"><a href="#多任務的好處" class="headerlink" title="多任務的好處"></a>多任務的好處</h4><p>為了更好理解何謂多任務，我簡單做一個情境的設置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">我們寫一個函數用來返回網頁的字符長度，假設我們有三個網頁想要知道長度，那麼這三個網頁都會分別呼叫這個函數，並且在程序中“依序執行”，也就是call了三次方法，所需的總運行時間就會是運行一次函數的三倍。</span><br><span class="line">有沒有辦法同時運行這三個func呢? 也就是所需時間就會等於跑一次func。</span><br></pre></td></tr></table></figure>
+
+<p>更簡單來說，考慮以下情境：</p>
+<blockquote>
+<p>http.get 等待網站回應<br>等待用戶輸入帳號密碼<br>等待數據讀取文件</p>
+</blockquote>
+<p>以上情境都需要程序 hold and wait。這是非常不效率的。<br>接下來將介紹下一個觀念 並發性。</p>
+<h4 id="並發性-Concurrency"><a href="#並發性-Concurrency" class="headerlink" title="並發性 Concurrency"></a>並發性 Concurrency</h4><blockquote>
+<p>並發性 concurrency 允許程序暫停一個任務並開始處理其他任務。</p>
+</blockquote>
+<p>*並行性： 同時處理多個任務，在某些情形下，goroutine允許並行。<br>*並行性： 現在大多數電腦，都有不同處理器，OS會在不同處理器之間分配任務，以便同時運行他們。</p>
+<p>也就是透過並發與並行，我們可以將上述情境轉換為：</p>
+<blockquote>
+<p>等網站回應時，發出另一個http get<br>等待用戶輸入時，可以在後台執行其他任務<br>等待數據讀取時，可以更新進度條</p>
+</blockquote>
+<p>在其他程式語言，並發任務就是線程，但golang的優勢在於所需的記憶體內存較低，啟動以及停止的時間更短，這意味這可以同時運行更多goroutine。</p>
+<h4 id="Go-routine容易忽視的點"><a href="#Go-routine容易忽視的點" class="headerlink" title="Go routine容易忽視的點"></a>Go routine容易忽視的點</h4><p>其實每個main函數都是使用goroutine啟動的，因此每個go程式都至少運行一個goroutine。</p>
+<blockquote>
+<p>有一個誤區，常常讓新手搞混就是因為不了解main函數是一個goroutine。</p>
+</blockquote>
+<p>例如有一個考題如下，main函數中有兩個<code>goroutine a(), b()</code>他們分別會print一些字符(a, b 各50次)，在結尾print出一段”end printing”</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">go</span> a()</span><br><span class="line">    <span class="keyword">go</span> b()</span><br><span class="line">    fmt.Println(<span class="string">&quot;end printing&quot;</span>)</span><br><span class="line">    <span class="comment">//time.Sleep(5 *time.Second) -&gt;暫停當下goroutine一段給定的時間</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>你可能會覺得既然使用了goroutine 來執行a, b 那麼順序會錯亂，因為是並發執行！</p>
+<p>你其實答對了部分，<strong>但忽略了main函數其實也是個goroutine</strong>，而go程式會在main goroutine完成後<strong>立刻結束程序</strong>，也就是說你只會看到”end printing”的輸出，因為go程式已經在<code>a(), b()</code>印出任何東西前就關閉了，因此不會看到任何a, b被執行。</p>
+<h5 id="那如何解決呢？"><a href="#那如何解決呢？" class="headerlink" title="那如何解決呢？"></a>那如何解決呢？</h5><blockquote>
+<p>只要延長main routine存在的時間即可，<strong>讓a.b有時間完成運行</strong>。當下我們先利用<code>time.Sleep(5 *time.Second)</code>來延長main routine存在的時間。</p>
+</blockquote>
+<h5 id="goroutine的順序性？"><a href="#goroutine的順序性？" class="headerlink" title="goroutine的順序性？"></a>goroutine的順序性？</h5><blockquote>
+<p>一般來說，我們無從得知goroutine會以什麼樣的順序去運行，這牽扯到os分配最佳化資源。<br>但是，如果goroutine的順序對你非常重要，那會需要用到channel的功能來實現它，這將會在下一章節提到。</p>
+</blockquote>
+<h5 id="goroutine是否能返回值？"><a href="#goroutine是否能返回值？" class="headerlink" title="goroutine是否能返回值？"></a>goroutine是否能返回值？</h5><blockquote>
+<p>注意，go語句不允許調用函數的返回值，那是因為在調用返回值之前，並發性的特性無法保證返回值已經準備好了。</p>
+</blockquote>
+<h5 id="如果我們需要goroutine之前，有資料或值的交換與傳送呢？"><a href="#如果我們需要goroutine之前，有資料或值的交換與傳送呢？" class="headerlink" title="如果我們需要goroutine之前，有資料或值的交換與傳送呢？"></a>如果我們需要goroutine之前，有資料或值的交換與傳送呢？</h5><blockquote>
+<p>那麼試想一下，有些情景是需要goroutine之間交流的，例如將值從一個goroutine發送到另一個goroutine。<br>這個交流方式就會用到 channel 的功能，而且能確保接收方在使用該值前，發送方的goroutine已經發送了該值。</p>
+</blockquote>
 
     </div>
 
@@ -435,7 +295,8 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tw/tags/Bash/" rel="tag"># Bash</a>
+              <a href="/tw/tags/go-routine/" rel="tag"># go routine</a>
+              <a href="/tw/tags/concurrency/" rel="tag"># concurrency</a>
           </div>
 
         
@@ -444,13 +305,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/tw/2020/09/22/Helm%E5%AF%A6%E4%BD%9C%E6%BC%94%E7%B7%B4%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E5%BB%BA%E7%AB%8B%E8%87%AA%E5%AE%9A%E7%BE%A9%E7%9A%84Chart/" rel="prev" title="Helm實作演練（二）：建立客製化的Chart">
-      <i class="fa fa-chevron-left"></i> Helm實作演練（二）：建立客製化的Chart
+    <a href="/tw/2020/10/06/%E4%B8%80%E4%BA%9B%E9%96%8B%E7%99%BC%E7%B6%93%E5%B8%B8%E4%BD%BF%E7%94%A8%E7%9A%84git%E6%8C%87%E4%BB%A4/" rel="prev" title="如何在open source project遞交PR">
+      <i class="fa fa-chevron-left"></i> 如何在open source project遞交PR
     </a></div>
-      <div class="post-nav-item">
-    <a href="/tw/2020/10/06/%E4%B8%80%E4%BA%9B%E9%96%8B%E7%99%BC%E7%B6%93%E5%B8%B8%E4%BD%BF%E7%94%A8%E7%9A%84git%E6%8C%87%E4%BB%A4/" rel="next" title="如何在open source project遞交PR">
-      如何在open source project遞交PR <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -509,6 +367,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%95%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A4%9A%E4%BB%BB%E5%8B%99%E7%9A%84%E5%A5%BD%E8%99%95"><span class="nav-number">1.1.</span> <span class="nav-text">多任務的好處</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%A6%E7%99%BC%E6%80%A7-Concurrency"><span class="nav-number">1.2.</span> <span class="nav-text">並發性 Concurrency</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Go-routine%E5%AE%B9%E6%98%93%E5%BF%BD%E8%A6%96%E7%9A%84%E9%BB%9E"><span class="nav-number">1.3.</span> <span class="nav-text">Go routine容易忽視的點</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%82%A3%E5%A6%82%E4%BD%95%E8%A7%A3%E6%B1%BA%E5%91%A2%EF%BC%9F"><span class="nav-number">1.3.1.</span> <span class="nav-text">那如何解決呢？</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#goroutine%E7%9A%84%E9%A0%86%E5%BA%8F%E6%80%A7%EF%BC%9F"><span class="nav-number">1.3.2.</span> <span class="nav-text">goroutine的順序性？</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#goroutine%E6%98%AF%E5%90%A6%E8%83%BD%E8%BF%94%E5%9B%9E%E5%80%BC%EF%BC%9F"><span class="nav-number">1.3.3.</span> <span class="nav-text">goroutine是否能返回值？</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%A6%82%E6%9E%9C%E6%88%91%E5%80%91%E9%9C%80%E8%A6%81goroutine%E4%B9%8B%E5%89%8D%EF%BC%8C%E6%9C%89%E8%B3%87%E6%96%99%E6%88%96%E5%80%BC%E7%9A%84%E4%BA%A4%E6%8F%9B%E8%88%87%E5%82%B3%E9%80%81%E5%91%A2%EF%BC%9F"><span class="nav-number">1.3.4.</span> <span class="nav-text">如果我們需要goroutine之前，有資料或值的交換與傳送呢？</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
