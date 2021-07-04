@@ -479,7 +479,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新於</span>
-                <time title="修改時間：2021-03-25 11:06:04" itemprop="dateModified" datetime="2021-03-25T11:06:04+01:00">2021-03-25</time>
+                <time title="修改時間：2021-07-04 16:30:00" itemprop="dateModified" datetime="2021-07-04T16:30:00+02:00">2021-07-04</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -516,191 +516,15 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <table>
-<thead>
-<tr>
-<th>Command</th>
-<th>Example</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>ls</code></td>
-<td>1. <code>$ ls</code><br/>2. <code>$ ls –l</code></td>
-<td>1. It lists files in the current directory.<br/> 2. It lists files in the long format.</td>
-</tr>
-<tr>
-<td><code>cd</code></td>
-<td>1. <code>$ cd</code><br/>2. <code>$ cd  test</code><br/>3. <code>$ cd ..</code></td>
-<td>1. It changes directory to your home directory.<br/> 2.  It changes directory to test.<br/> 3. It moves back to one directory or to the parent directory of your current directory.</td>
-</tr>
-<tr>
-<td><code>mkdir</code></td>
-<td><code>$ mkdir test</code></td>
-<td>It creates a directory called test.</td>
-</tr>
-<tr>
-<td><code>rmdir</code></td>
-<td><code>$ rmdir test</code></td>
-<td>It removes a directory called test.</td>
-</tr>
-<tr>
-<td><code>cp</code></td>
-<td>1. <code>$ cp file1 test</code><br/>2. <code>$ cp file1 file1.bak </code></td>
-<td>1. It copies file1 to test directory. <br/> 2. It takes backup of file1.</td>
-</tr>
-<tr>
-<td><code>rm</code></td>
-<td><code>$ rm file1</code></td>
-<td>It removes or delete a file1.</td>
-</tr>
-<tr>
-<td><code>mv</code></td>
-<td><code>$ mv file1 file2</code></td>
-<td>It moves or renames file1 to file2 (depends on file2 type).</td>
-</tr>
-<tr>
-<td><code>more</code></td>
-<td><code>$ more</code></td>
-<td>It checks or display one page at a time.</td>
-</tr>
-<tr>
-<td><code>touch</code></td>
-<td><code>$ touch test</code></td>
-<td>It creates an empty file called test.</td>
-</tr>
-<tr>
-<td><code>cat</code></td>
-<td>1. <code>$ cat File1</code><br/>2. <code>$ cat test1 &gt; test2 </code></td>
-<td>1. It displays contents of File1. <br/> 2. It creates a new file test2 with the contents of test1.</td>
-</tr>
-<tr>
-<td><code>compress</code></td>
-<td><code>$ compress file1</code></td>
-<td>It reduces the size of file1 and creates a compressed file called file1.z and deletes file1.</td>
-</tr>
-<tr>
-<td><code>date</code></td>
-<td><code>$ date</code><br/> e.g. Output:Tuesday, September 12, 2020 06:58:06 AM MDT</td>
-<td>It displays current date and time.</td>
-</tr>
-<tr>
-<td><code>diff</code></td>
-<td><code>$ diff file1 file2</code></td>
-<td>It displays line by line difference between file1 and file2.</td>
-</tr>
-<tr>
-<td><code>find</code></td>
-<td><code>$ find . -name &#39;*.t&#39; -print</code></td>
-<td>It searches in the current directory and in all its subdirectories for files ending with .t and writes their names in the output.</td>
-</tr>
-<tr>
-<td><code>finger</code></td>
-<td><code>$ finger</code></td>
-<td>It displays information about the user.</td>
-</tr>
-<tr>
-<td><code>who</code></td>
-<td><code>$ who</code></td>
-<td>It lists the users those who are logged in on the machine.</td>
-</tr>
-<tr>
-<td><code>grep</code></td>
-<td>1. <code>$ grep Hello file1</code><br/>2. <code>$ grep -c Hello file1 </code></td>
-<td>1. It searches for the lines containing Hello in file1. <br/> 2. It gives count or number of lines that contains Hello in file1.</td>
-</tr>
-<tr>
-<td><code>kill</code></td>
-<td><code>$ kill 1488</code></td>
-<td>It kills the process which has PID as 1488.</td>
-</tr>
-<tr>
-<td><code>lpr</code></td>
-<td>1. <code>$ lpr -Pprinter1 test</code><br/>2. <code>$ lp file1 </code></td>
-<td>1. It sents file test to print it on printer1. <br/> 2. It prints file1</td>
-</tr>
-<tr>
-<td><code>man</code></td>
-<td><code>$ man ls</code></td>
-<td>It displays online manual or help about ls command.</td>
-</tr>
-<tr>
-<td><code>passwd</code></td>
-<td><code>$ passwd</code></td>
-<td>It is used to change the password.</td>
-</tr>
-<tr>
-<td><code>pwd</code></td>
-<td><code>$ pwd</code></td>
-<td>It displays present working directory.</td>
-</tr>
-<tr>
-<td><code>ps</code></td>
-<td><code>$ ps</code></td>
-<td>It displays the list of processes which are currently running on the machine.</td>
-</tr>
-<tr>
-<td><code>talk</code></td>
-<td><code>$ talk user1</code></td>
-<td>It is used to talk to the user1 who is currently logged into the same machine.</td>
-</tr>
-<tr>
-<td><code>wc</code></td>
-<td><code>$ wc file1</code></td>
-<td>It counts the number of <code>lines</code>, <code>words</code> and <code>characters</code> in file1.</td>
-</tr>
-<tr>
-<td><code>chmod</code></td>
-<td><code>$ chmod 744 file1</code></td>
-<td>It changes the permissions of file1 and assigns this permission <code>rwxr--r--</code>. <a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/Chmod">More chmod commands</a></td>
-</tr>
-<tr>
-<td><code>gzip</code></td>
-<td><code>$ gzip file1</code></td>
-<td>It compresses the file1. After compression file1 should look like this <code>file1.gz</code>.</td>
-</tr>
-<tr>
-<td><code>gunzip</code></td>
-<td><code>$ gunzip file1.gz </code></td>
-<td>It uncompresses the <code>file1.gz</code> After uncompressopm <code>file1.gz</code> should look like this, <code>file1</code>.</td>
-</tr>
-<tr>
-<td><code>history</code></td>
-<td><code>$ history</code></td>
-<td>It lists all the commands which are recently used.</td>
-</tr>
-<tr>
-<td><code>logname</code></td>
-<td><code>$ logname</code></td>
-<td>It prints log name of the user.</td>
-</tr>
-<tr>
-<td><code>uname</code></td>
-<td><code>$ uname</code></td>
-<td>It gives information about unix system which you are using.</td>
-</tr>
-<tr>
-<td><code>tty</code></td>
-<td><code>$ tty</code></td>
-<td>It displays the device name of termainal.</td>
-</tr>
-<tr>
-<td><code>sort</code></td>
-<td><code>$ sort file1</code></td>
-<td>It will sort the contents of file1 and displays sorted output on the screen.</td>
-</tr>
-<tr>
-<td><code>head</code></td>
-<td><code>$ head -15 file1</code></td>
-<td>It displays first 15 lines of the file.</td>
-</tr>
-<tr>
-<td><code>tail</code></td>
-<td><code>$ tail -15 file1</code></td>
-<td>It displays last 15 lines of the file.</td>
-</tr>
-</tbody></table>
-
+          <p>一些常用的bash 指令，以供日後查詢使用。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/tw/2020/09/29/%E5%B8%B8%E7%94%A8%E7%9A%84Bash%E6%8C%87%E4%BB%A4/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
