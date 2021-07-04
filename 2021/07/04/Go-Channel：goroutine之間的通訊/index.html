@@ -22,21 +22,21 @@
     var CONFIG = {"hostname":"routerhan.github.io","root":"/tw/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="這裡記錄下我學習Golang一開始讓我有些苦惱的go routine已經concurrency的機制運作。 這篇文章提到：  並發性concurrency和並行性的不同。 並發性concurrency如何透過go routine實現。 一些常見的誤區。">
+  <meta name="description" content="這裡記錄下我學習Golang channel如何實現goroutine的溝通機制。 這篇文章提到：  如何創建和使用。 channel如何可以保證goroutine之間的有序性交流。 一些容易忽略的點。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Go : Concurrency與go routine">
-<meta property="og:url" content="https://routerhan.github.io/tw/2021/06/22/Go-Concurrency%E4%B8%A6%E7%99%BC%E6%80%A7%E8%88%87go-routine/index.html">
+<meta property="og:title" content="Go: Channel：goroutine之間的通訊">
+<meta property="og:url" content="https://routerhan.github.io/tw/2021/07/04/Go-Channel%EF%BC%9Agoroutine%E4%B9%8B%E9%96%93%E7%9A%84%E9%80%9A%E8%A8%8A/index.html">
 <meta property="og:site_name" content="Chen&#39;s Blog">
-<meta property="og:description" content="這裡記錄下我學習Golang一開始讓我有些苦惱的go routine已經concurrency的機制運作。 這篇文章提到：  並發性concurrency和並行性的不同。 並發性concurrency如何透過go routine實現。 一些常見的誤區。">
+<meta property="og:description" content="這裡記錄下我學習Golang channel如何實現goroutine的溝通機制。 這篇文章提到：  如何創建和使用。 channel如何可以保證goroutine之間的有序性交流。 一些容易忽略的點。">
 <meta property="og:locale" content="zh_TW">
-<meta property="article:published_time" content="2021-06-22T12:18:00.000Z">
-<meta property="article:modified_time" content="2021-06-22T12:41:36.893Z">
+<meta property="article:published_time" content="2021-07-04T14:08:00.000Z">
+<meta property="article:modified_time" content="2021-07-04T14:26:32.821Z">
 <meta property="article:author" content="Ching-Han">
-<meta property="article:tag" content="go routine">
-<meta property="article:tag" content="concurrency">
+<meta property="article:tag" content="goroutine">
+<meta property="article:tag" content="channel">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://routerhan.github.io/tw/2021/06/22/Go-Concurrency%E4%B8%A6%E7%99%BC%E6%80%A7%E8%88%87go-routine/">
+<link rel="canonical" href="https://routerhan.github.io/tw/2021/07/04/Go-Channel%EF%BC%9Agoroutine%E4%B9%8B%E9%96%93%E7%9A%84%E9%80%9A%E8%A8%8A/">
 
 
 <script id="page-configurations">
@@ -49,7 +49,7 @@
   };
 </script>
 
-  <title>Go : Concurrency與go routine | Chen's Blog</title>
+  <title>Go: Channel：goroutine之間的通訊 | Chen's Blog</title>
   
 
 
@@ -169,7 +169,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
-    <link itemprop="mainEntityOfPage" href="https://routerhan.github.io/tw/2021/06/22/Go-Concurrency%E4%B8%A6%E7%99%BC%E6%80%A7%E8%88%87go-routine/">
+    <link itemprop="mainEntityOfPage" href="https://routerhan.github.io/tw/2021/07/04/Go-Channel%EF%BC%9Agoroutine%E4%B9%8B%E9%96%93%E7%9A%84%E9%80%9A%E8%A8%8A/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/tw/images/avatar.gif">
@@ -182,7 +182,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Go : Concurrency與go routine
+          Go: Channel：goroutine之間的通訊
         </h1>
 
         <div class="post-meta">
@@ -193,7 +193,7 @@
               <span class="post-meta-item-text">發表於</span>
               
 
-              <time title="創建時間：2021-06-22 14:18:00 / 修改時間：14:41:36" itemprop="dateCreated datePublished" datetime="2021-06-22T14:18:00+02:00">2021-06-22</time>
+              <time title="創建時間：2021-07-04 16:08:00 / 修改時間：16:26:32" itemprop="dateCreated datePublished" datetime="2021-07-04T16:08:00+02:00">2021-07-04</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -218,14 +218,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">文章字數：</span>
-              <span>1.6k</span>
+              <span>1.9k</span>
             </span>
             <span class="post-meta-item" title="所需閱讀時間">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
-              <span>1 分鐘</span>
+              <span>2 分鐘</span>
             </span>
 
         </div>
@@ -237,55 +237,57 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>這裡記錄下我學習Golang一開始讓我有些苦惱的go routine已經concurrency的機制運作。</p>
+        <p>這裡記錄下我學習Golang channel如何實現goroutine的溝通機制。</p>
 <p>這篇文章提到：</p>
 <ul>
-<li>並發性concurrency和並行性的不同。</li>
-<li>並發性concurrency如何透過go routine實現。</li>
-<li>一些常見的誤區。</li>
+<li>如何創建和使用。</li>
+<li>channel如何可以保證goroutine之間的有序性交流。</li>
+<li>一些容易忽略的點。</li>
 </ul>
 <a id="more"></a>
 
 
 
-<h3 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h3><h4 id="多任務的好處"><a href="#多任務的好處" class="headerlink" title="多任務的好處"></a>多任務的好處</h4><p>為了更好理解何謂多任務，我簡單做一個情境的設置：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">我們寫一個函數用來返回網頁的字符長度，假設我們有三個網頁想要知道長度，那麼這三個網頁都會分別呼叫這個函數，並且在程序中“依序執行”，也就是call了三次方法，所需的總運行時間就會是運行一次函數的三倍。</span><br><span class="line">有沒有辦法同時運行這三個func呢? 也就是所需時間就會等於跑一次func。</span><br></pre></td></tr></table></figure>
+<h3 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h3><h4 id="channel-實現了從一個goroutine到另一個goroutine的通訊。"><a href="#channel-實現了從一個goroutine到另一個goroutine的通訊。" class="headerlink" title="channel 實現了從一個goroutine到另一個goroutine的通訊。"></a>channel 實現了從一個goroutine到另一個goroutine的通訊。</h4><p>上一章節有提到，channel可以保證goroutine之間的有序性交流。</p>
+<hr>
+<blockquote>
+<p>白話點可以這樣想像，在疫情期間，你點了外賣，你必須要大樓涼亭去取餐，無論餐點是否已經抵達你都可以下樓取餐，可以想像成你是一個接收方的goroutine，餐點就是value。</p>
+</blockquote>
+<blockquote>
+<p>外送員呢，也無論你是否已經下樓，他的目標就是很簡單，將餐點送到涼亭，他是一個發送方的goroutine。</p>
+</blockquote>
+<blockquote>
+<p>在疫情期間為了減少接觸，我們必須確保一件事，餐點必須已經抵達涼亭，你才不用在那裡乾等撲空，也就是說，要先確定餐點value已經抵達涼亭。</p>
+</blockquote>
+<blockquote>
+<p>那麼該如何實現完成0接觸這件事呢？<br>大家一定想到外送平台會通知你，餐點是否已經抵達吧。<br>也就是說當外送平台確認餐點已經抵達時，你才會被通知下樓取餐，可以把外送平台想像成channel，因為他阻饒(blocking)你在餐點還沒抵達前就下樓乾等。</p>
+</blockquote>
+<blockquote>
+<p>而這個阻饒機制blocking就是channel確保goroutine的同步以及有序性的重要機制。</p>
+</blockquote>
+<hr>
+<h4 id="程序中的實現概念"><a href="#程序中的實現概念" class="headerlink" title="程序中的實現概念"></a>程序中的實現概念</h4><p>那麼在程序中要如何驗證呢？<br>我們用一個簡單的例子來演示：</p>
+<p>首先在腦袋中，建立兩條並行的線，一個是發送值的a goroutine，另一個線是接收值的main goroutine。<br>在a goroutine中，他發送了兩個值到channel中; 而main goroutine，試著去接收這兩個值。<br>假如我們讓a goroutine發送值之前休眠兩秒，而main goroutine在接收值前休眠五秒。</p>
+<p>假如我們讓a goroutine發送值之前休眠兩秒，而main goroutine在接收值前休眠五秒。<br>我們可以看到前兩秒，發送與接收方都在休眠，兩秒後a goroutine醒來並發送第一個值，<br><strong>注意，a goroutine只會傳送第一個值，blocking阻塞了a goroutine發送第二個值，因為接收方main goroutine仍在休眠中</strong>，<br>再經過三秒，main goroutine醒來，並接收了第一個值，此時<strong>a goroutine的blocking才解除，並得以發送第二個值。</strong>，而main goroutine也在確認a goroutine已經發送後，才調用第二個值。</p>
+<p>一般來說，<code>將值發送進去channel</code>  以及  <code>將值從 channel中取出</code> 是成對的運作。<br>如果發送的第一個值還沒被取出，那此發送goroutine會被blocking，因為main goroutine還沒有調用channel的值。</p>
+<h4 id="channel-使用"><a href="#channel-使用" class="headerlink" title="channel 使用"></a>channel 使用</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">....</span><br><span class="line">urlChan := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">string</span>) <span class="comment">// 每個channel只能攜帶一個類型，通常在創建時指定。</span></span><br><span class="line"><span class="keyword">for</span> _, url := <span class="keyword">range</span> urls&#123;</span><br><span class="line">    <span class="keyword">go</span> responseUrl(url, urlChan) <span class="comment">// 這裡我們把url 發送到 channel 中</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i := <span class="number">0</span>; i&lt; <span class="built_in">len</span>(urls); i++&#123;</span><br><span class="line">    url := &lt;- urlChan <span class="comment">// 從urlChan 接收值</span></span><br><span class="line">    fmt.Printf(<span class="string">&quot;url:&quot;</span>, url) <span class="comment">//注意 main 是一個 goroutine</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>更簡單來說，考慮以下情境：</p>
+<p>總結一下，</p>
 <blockquote>
-<p>http.get 等待網站回應<br>等待用戶輸入帳號密碼<br>等待數據讀取文件</p>
+<p>goroutine 是同步運行的函數<br>channel 是用於在 goroutine之間發送值的數據結構，默認情況下，在channel發送一個值會觸發blocking暫停當下的goroutine，直到接收到該值為止，反之亦然，試圖接收的一方也會阻塞當下goroutine，直到值被發送到目標channel為止。</p>
 </blockquote>
-<p>以上情境都需要程序 hold and wait。這是非常不效率的。<br>接下來將介紹下一個觀念 並發性。</p>
-<h4 id="並發性-Concurrency"><a href="#並發性-Concurrency" class="headerlink" title="並發性 Concurrency"></a>並發性 Concurrency</h4><blockquote>
-<p>並發性 concurrency 允許程序暫停一個任務並開始處理其他任務。</p>
-</blockquote>
-<p>*並行性： 同時處理多個任務，在某些情形下，goroutine允許並行。<br>*並行性： 現在大多數電腦，都有不同處理器，OS會在不同處理器之間分配任務，以便同時運行他們。</p>
-<p>也就是透過並發與並行，我們可以將上述情境轉換為：</p>
-<blockquote>
-<p>等網站回應時，發出另一個http get<br>等待用戶輸入時，可以在後台執行其他任務<br>等待數據讀取時，可以更新進度條</p>
-</blockquote>
-<p>在其他程式語言，並發任務就是線程，但golang的優勢在於所需的記憶體內存較低，啟動以及停止的時間更短，這意味這可以同時運行更多goroutine。</p>
-<h4 id="Go-routine容易忽視的點"><a href="#Go-routine容易忽視的點" class="headerlink" title="Go routine容易忽視的點"></a>Go routine容易忽視的點</h4><p>其實每個main函數都是使用goroutine啟動的，因此每個go程式都至少運行一個goroutine。</p>
+<h4 id="一些容易忽略的點"><a href="#一些容易忽略的點" class="headerlink" title="一些容易忽略的點"></a>一些容易忽略的點</h4><p>其實每個main函數都是使用goroutine啟動的，因此每個go程式都至少運行一個goroutine。</p>
 <blockquote>
 <p>有一個誤區，常常讓新手搞混就是因為不了解main函數是一個goroutine。</p>
 </blockquote>
-<p>例如有一個考題如下，main函數中有兩個<code>goroutine a(), b()</code>他們分別會print一些字符(a, b 各50次)，在結尾print出一段”end printing”</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">go</span> a()</span><br><span class="line">    <span class="keyword">go</span> b()</span><br><span class="line">    fmt.Println(<span class="string">&quot;end printing&quot;</span>)</span><br><span class="line">    <span class="comment">//time.Sleep(5 *time.Second) -&gt;暫停當下goroutine一段給定的時間</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>你可能會覺得既然使用了goroutine 來執行a, b 那麼順序會錯亂，因為是並發執行！</p>
-<p>你其實答對了部分，<strong>但忽略了main函數其實也是個goroutine</strong>，而go程式會在main goroutine完成後<strong>立刻結束程序</strong>，也就是說你只會看到”end printing”的輸出，因為go程式已經在<code>a(), b()</code>印出任何東西前就關閉了，因此不會看到任何a, b被執行。</p>
-<h5 id="那如何解決呢？"><a href="#那如何解決呢？" class="headerlink" title="那如何解決呢？"></a>那如何解決呢？</h5><blockquote>
-<p>只要延長main routine存在的時間即可，<strong>讓a.b有時間完成運行</strong>。當下我們先利用<code>time.Sleep(5 *time.Second)</code>來延長main routine存在的時間。</p>
-</blockquote>
-<h5 id="goroutine的順序性？"><a href="#goroutine的順序性？" class="headerlink" title="goroutine的順序性？"></a>goroutine的順序性？</h5><blockquote>
-<p>一般來說，我們無從得知goroutine會以什麼樣的順序去運行，這牽扯到os分配最佳化資源。<br>但是，如果goroutine的順序對你非常重要，那會需要用到channel的功能來實現它，這將會在下一章節提到。</p>
-</blockquote>
-<h5 id="goroutine是否能返回值？"><a href="#goroutine是否能返回值？" class="headerlink" title="goroutine是否能返回值？"></a>goroutine是否能返回值？</h5><blockquote>
-<p>注意，go語句不允許調用函數的返回值，那是因為在調用返回值之前，並發性的特性無法保證返回值已經準備好了。</p>
-</blockquote>
-<h5 id="如果我們需要goroutine之前，有資料或值的交換與傳送呢？"><a href="#如果我們需要goroutine之前，有資料或值的交換與傳送呢？" class="headerlink" title="如果我們需要goroutine之前，有資料或值的交換與傳送呢？"></a>如果我們需要goroutine之前，有資料或值的交換與傳送呢？</h5><blockquote>
-<p>那麼試想一下，有些情景是需要goroutine之間交流的，例如將值從一個goroutine發送到另一個goroutine。<br>這個交流方式就會用到 channel 的功能，而且能確保接收方在使用該值前，發送方的goroutine已經發送了該值。</p>
-</blockquote>
+<ol>
+<li>每個go程式都至少有一個goroutine，即 main 函數。</li>
+<li>go程式將在main goroutine結束時終止，即使其他goroutine還在運行。</li>
+<li>Go無法保證何時goroutine以何種順序運行，這是為了保證goroutine最佳化利用資源。</li>
+<li>goroutine 無法使用返回值。</li>
+<li>如果需要goroutine的值，則需要先發送至channel ，才能將值返回出來。</li>
+<li>channel 也支援複合類型的傳輸 e.g. struct, slice等類型。</li>
+</ol>
 
     </div>
 
@@ -295,8 +297,8 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tw/tags/go-routine/" rel="tag"># go routine</a>
-              <a href="/tw/tags/concurrency/" rel="tag"># concurrency</a>
+              <a href="/tw/tags/goroutine/" rel="tag"># goroutine</a>
+              <a href="/tw/tags/channel/" rel="tag"># channel</a>
           </div>
 
         
@@ -305,13 +307,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/tw/2020/10/06/%E4%B8%80%E4%BA%9B%E9%96%8B%E7%99%BC%E7%B6%93%E5%B8%B8%E4%BD%BF%E7%94%A8%E7%9A%84git%E6%8C%87%E4%BB%A4/" rel="prev" title="如何在open source project遞交PR">
-      <i class="fa fa-chevron-left"></i> 如何在open source project遞交PR
+    <a href="/tw/2021/06/22/Go-Concurrency%E4%B8%A6%E7%99%BC%E6%80%A7%E8%88%87go-routine/" rel="prev" title="Go : Concurrency與go routine">
+      <i class="fa fa-chevron-left"></i> Go : Concurrency與go routine
     </a></div>
-      <div class="post-nav-item">
-    <a href="/tw/2021/07/04/Go-Channel%EF%BC%9Agoroutine%E4%B9%8B%E9%96%93%E7%9A%84%E9%80%9A%E8%A8%8A/" rel="next" title="Go: Channel：goroutine之間的通訊">
-      Go: Channel：goroutine之間的通訊 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -370,7 +369,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%95%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A4%9A%E4%BB%BB%E5%8B%99%E7%9A%84%E5%A5%BD%E8%99%95"><span class="nav-number">1.1.</span> <span class="nav-text">多任務的好處</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%A6%E7%99%BC%E6%80%A7-Concurrency"><span class="nav-number">1.2.</span> <span class="nav-text">並發性 Concurrency</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Go-routine%E5%AE%B9%E6%98%93%E5%BF%BD%E8%A6%96%E7%9A%84%E9%BB%9E"><span class="nav-number">1.3.</span> <span class="nav-text">Go routine容易忽視的點</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%82%A3%E5%A6%82%E4%BD%95%E8%A7%A3%E6%B1%BA%E5%91%A2%EF%BC%9F"><span class="nav-number">1.3.1.</span> <span class="nav-text">那如何解決呢？</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#goroutine%E7%9A%84%E9%A0%86%E5%BA%8F%E6%80%A7%EF%BC%9F"><span class="nav-number">1.3.2.</span> <span class="nav-text">goroutine的順序性？</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#goroutine%E6%98%AF%E5%90%A6%E8%83%BD%E8%BF%94%E5%9B%9E%E5%80%BC%EF%BC%9F"><span class="nav-number">1.3.3.</span> <span class="nav-text">goroutine是否能返回值？</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%A6%82%E6%9E%9C%E6%88%91%E5%80%91%E9%9C%80%E8%A6%81goroutine%E4%B9%8B%E5%89%8D%EF%BC%8C%E6%9C%89%E8%B3%87%E6%96%99%E6%88%96%E5%80%BC%E7%9A%84%E4%BA%A4%E6%8F%9B%E8%88%87%E5%82%B3%E9%80%81%E5%91%A2%EF%BC%9F"><span class="nav-number">1.3.4.</span> <span class="nav-text">如果我們需要goroutine之前，有資料或值的交換與傳送呢？</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%95%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#channel-%E5%AF%A6%E7%8F%BE%E4%BA%86%E5%BE%9E%E4%B8%80%E5%80%8Bgoroutine%E5%88%B0%E5%8F%A6%E4%B8%80%E5%80%8Bgoroutine%E7%9A%84%E9%80%9A%E8%A8%8A%E3%80%82"><span class="nav-number">1.1.</span> <span class="nav-text">channel 實現了從一個goroutine到另一個goroutine的通訊。</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A8%8B%E5%BA%8F%E4%B8%AD%E7%9A%84%E5%AF%A6%E7%8F%BE%E6%A6%82%E5%BF%B5"><span class="nav-number">1.2.</span> <span class="nav-text">程序中的實現概念</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#channel-%E4%BD%BF%E7%94%A8"><span class="nav-number">1.3.</span> <span class="nav-text">channel 使用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E5%AE%B9%E6%98%93%E5%BF%BD%E7%95%A5%E7%9A%84%E9%BB%9E"><span class="nav-number">1.4.</span> <span class="nav-text">一些容易忽略的點</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
